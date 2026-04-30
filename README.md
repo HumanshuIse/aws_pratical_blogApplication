@@ -1,94 +1,171 @@
-# Full-Stack Blog Application
+# Full-stack Blog Application
 
 ## 1. Project Overview
-This is a complete full-stack Blog Application designed to be simple, modular, and easy to understand. It allows users to view all blog posts, read individual posts in detail, create new blog posts, and delete existing ones.
 
-## 2. Tech Stack
-- **Frontend**: React (Vite)
-- **Backend**: Node.js + Express
-- **Database**: MongoDB Atlas (Cloud Database)
+A complete, modern full-stack blog application designed to provide a seamless reading and writing experience. It allows users to browse blog posts, view detailed articles, create new content, and manage their existing posts. The project is architected with a decoupled frontend and backend for high scalability and easy deployment.
 
-## 3. Folder Structure
-```text
-blog-app/
-│
-├── frontend/   → React app
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Navbar.jsx
-│   │   │   └── PostCard.jsx
-│   │   ├── pages/
-│   │   │   ├── Home.jsx
-│   │   │   ├── CreatePost.jsx
-│   │   │   └── ViewPost.jsx
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   └── main.jsx
-│   └── package.json
-│
-├── backend/    → Node backend
-│   ├── config/
-│   │   └── db.js
-│   ├── controllers/
-│   │   └── blogController.js
-│   ├── models/
-│   │   └── Blog.js
-│   ├── routes/
-│   │   └── blogRoutes.js
-│   ├── .env
-│   ├── server.js
-│   └── package.json
-│
-└── README.md
-```
+---
 
-## 4. Local Setup Steps
+## 2. Features
 
-### Clone repo
+- Create post
+- View posts
+- View single post
+- Delete post
+
+---
+
+## 3. Tech Stack
+
+- **Frontend:** React (Vite)
+- **Backend:** Node.js + Express
+- **Database:** MongoDB Atlas
+
+---
+
+## 4. Prerequisites
+
+Before setting up the project, ensure your environment meets the following requirements:
+
+- **Node.js:** v18 or v20
+- **npm:** Package manager (comes with Node.js)
+- **MongoDB Atlas:** Valid connection string for your database
+
+Check your currently installed versions with these commands:
 ```bash
-git clone <repository_url>
-cd blog-app
+node -v
+npm -v
 ```
 
-### Backend Setup
-1. Navigate to the backend directory:
+---
+
+## 5. Connect to EC2 Instance (SSH)
+
+To deploy the application, SSH into your AWS EC2 instance. Use the following command format:
+
+```bash
+ssh -i /path/to/your-key.pem ubuntu@your-ec2-public-ip
+```
+
+**Explanation:**
+- `/path/to/your-key.pem`: The absolute path to your downloaded AWS private key.
+- `ubuntu`: The default username for Ubuntu AMIs (use `ec2-user` if running Amazon Linux).
+- `your-ec2-public-ip`: The IPv4 Public IP address of your EC2 instance.
+
+---
+
+## 6. Install Node.js (Ubuntu)
+
+Run the following commands on your EC2 instance to install Node.js and npm:
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+sudo apt install npm
+```
+
+---
+
+## 7. Backend Setup
+
+Configure the environment variables for your backend server.
+
 ```bash
 cd backend
-```
-2. Install dependencies:
-```bash
-npm install
-```
-3. Update the `.env` file in the `backend` directory with your MongoDB Atlas connection string.
-4. Run the server:
-```bash
-npm run server
+cp .env.example .env
+nano .env
 ```
 
-### Frontend Setup
-1. Open a new terminal and navigate to the frontend directory:
+Add your specific configuration details:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+PORT=5000
+```
+
+**Nano save instructions:**
+1. Press `CTRL + O` to save the file.
+2. Press `Enter` to confirm the file name.
+3. Press `CTRL + X` to exit the nano editor.
+
+---
+
+## 8. Install Dependencies
+
+You must install dependencies for both the frontend and backend.
+
+**Backend:**
+```bash
+cd backend
+npm install
+```
+
+**Frontend:**
+```bash
+cd ../frontend
+npm install
+```
+
+---
+
+## 9. Run the Application
+
+To run both servers simultaneously, open two separate terminal windows (or SSH sessions).
+
+**Terminal 1 (Backend):**
+```bash
+cd backend
+npm start
+```
+
+**Terminal 2 (Frontend):**
 ```bash
 cd frontend
+npm run dev -- --host
 ```
-2. Install dependencies:
-```bash
-npm install
-```
-3. Start the development server:
-```bash
-npm run dev
+*(Note: `--host` exposes the Vite development server so it can be accessed publicly via the EC2 IP.)*
+
+---
+
+## 10. Access Application
+
+Open your web browser and navigate to:
+
+```text
+http://your-ec2-public-ip:5173
 ```
 
-## 5. API Endpoints
+---
 
-| HTTP Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/posts` | Get all blog posts |
-| `GET` | `/api/posts/:id` | Get a single blog post by ID |
-| `POST` | `/api/posts` | Create a new blog post |
-| `DELETE` | `/api/posts/:id` | Delete a blog post by ID |
+## 11. Security Group Configuration
 
-## 6. Sample JSON
+For your application to be reachable from the internet, you must configure your AWS EC2 Security Group:
+
+1. Go to your **EC2 Dashboard** > **Security Groups**.
+2. Select the security group attached to your instance.
+3. Click **Edit inbound rules** and add the following rule:
+   - **Type:** Custom TCP
+   - **Port:** `5173`
+   - **Source:** `0.0.0.0/0` (Anywhere)
+4. Save the rules.
+
+---
+
+## 12. API Endpoints
+
+The backend Express server exposes the following REST API routes:
+
+- `GET /api/posts` - Retrieve all blog posts
+- `GET /api/posts/:id` - Retrieve a single blog post by its ID
+- `POST /api/posts` - Create a new blog post
+- `DELETE /api/posts/:id` - Delete a blog post by its ID
+
+---
+
+## 13. Sample Request JSON
+
+When creating a post via `POST /api/posts`, use the following payload structure:
+
 ```json
 {
   "title": "My Blog",
@@ -97,20 +174,11 @@ npm run dev
 }
 ```
 
-## 7. AWS EC2 DEPLOYMENT (STEPS)
+---
 
-1. **Launch EC2 (Ubuntu)**: Go to AWS Management Console, launch a new EC2 instance with an Ubuntu Server AMI. Configure security groups to allow HTTP (port 80) and SSH (port 22). Add a custom TCP rule for port 5000 if running the backend separately.
-2. **Install Node.js**: SSH into the instance and install Node.js and npm via `nvm` or the NodeSource package repository.
-3. **Clone repo**: Run `git clone <your-repo-url>` on the EC2 instance.
-4. **Setup .env**: Navigate to the `backend` folder and create the `.env` file with your `MONGO_URI` and `PORT`.
-5. **Run backend**: Install dependencies with `npm install`, then start the backend using a process manager like PM2 (`pm2 start server.js`).
-6. **Build frontend**: Navigate to the `frontend` folder, install dependencies (`npm install`), and run `npm run build` to generate the production static files.
-7. **Serve frontend**: Use a web server like Nginx or a static server (e.g., `serve`) to serve the `dist` folder generated by the frontend build process. Configure Nginx to reverse proxy API requests to your Node.js backend.
+## 14. Important Notes
 
-## 8. Testing (Postman)
-You can easily test the API endpoints using Postman:
-
-1. **GET All Posts**: Set method to `GET` and URL to `http://localhost:5000/api/posts`. Click Send.
-2. **GET Single Post**: Set method to `GET` and URL to `http://localhost:5000/api/posts/<post_id>`. Click Send.
-3. **POST Create Post**: Set method to `POST` and URL to `http://localhost:5000/api/posts`. Go to the **Body** tab, select **raw** and **JSON**, and paste the Sample JSON. Click Send.
-4. **DELETE Post**: Set method to `DELETE` and URL to `http://localhost:5000/api/posts/<post_id>`. Click Send.
+- **Never commit `.env`**: Always ensure your `.env` file is listed in `.gitignore` to prevent leaking secrets to version control.
+- **Keep secrets safe**: Protect your MongoDB connection string and JWT secrets.
+- **Ensure backend runs on port 5000**: The frontend Axios requests are hardcoded to hit `http://localhost:5000`.
+- **No spaces around '=' in `.env`**: Environment variables must be formatted exactly as `KEY=VALUE`.

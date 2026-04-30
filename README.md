@@ -70,23 +70,29 @@ sudo apt install npm
 
 Configure the environment variables for your backend server.
 
+### 1) Backend Configuration
 ```bash
 cd backend
 cp .env.example .env
+```
+
+### 2) Update Environment Variables (.env)
+Using Nano:
+```bash
 nano .env
 ```
 
-Add your specific configuration details:
-
+Update values:
 ```env
 MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
 PORT=5000
 ```
 
-**Nano save instructions:**
-1. Press `CTRL + O` to save the file.
-2. Press `Enter` to confirm the file name.
-3. Press `CTRL + X` to exit the nano editor.
+**Save & Exit Nano:**
+1. `CTRL + O` → save
+2. `Enter` → confirm
+3. `CTRL + X` → exit
 
 ---
 

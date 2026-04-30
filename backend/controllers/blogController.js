@@ -30,7 +30,9 @@ const getPostById = async (req, res) => {
 // @route   POST /api/posts
 const createPost = async (req, res) => {
   try {
-    const { title, content, author } = req.body;
+    const { title, content } = req.body;
+    // Fallback to req.body.author for backward compatibility if needed, else req.user.username
+    const author = req.body.author || req.user.username;
 
     const post = new Blog({
       title,
@@ -61,9 +63,43 @@ const deletePost = async (req, res) => {
   }
 };
 
+// @desc    Update a post
+// @route   PUT /api/posts/:id
+const updatePost = async (req, res) => {
+  try {
+    const post = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (post) {
+      res.json(post);
+    } else {
+      res.status(404).json({ message: 'Post not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Like a post
+// @route   PUT /api/posts/:id/like
+const likePost = async (req, res) => {
+  try {
+    const post = await Blog.findById(req.params.id);
+    if (post) {
+      post.likes += 1;
+      await post.save();
+      res.json(post);
+    } else {
+      res.status(404).json({ message: 'Post not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllPosts,
   getPostById,
   createPost,
   deletePost,
+  updatePost,
+  likePost,
 };

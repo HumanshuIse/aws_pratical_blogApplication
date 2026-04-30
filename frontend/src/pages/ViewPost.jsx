@@ -7,6 +7,7 @@ const ViewPost = () => {
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -24,9 +25,12 @@ const ViewPost = () => {
   }, [id]);
 
   const handleDelete = async () => {
+    if (!user) return alert('Please login to delete');
     if (window.confirm('Are you sure you want to delete this post?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/posts/${id}`);
+        await axios.delete(`http://localhost:5000/api/posts/${id}`, {
+          headers: { Authorization: `Bearer ${user.token}` }
+        });
         navigate('/');
       } catch (error) {
         console.error('Error deleting post:', error);
@@ -48,8 +52,14 @@ const ViewPost = () => {
       <div className="view-post-meta">
         <div>
           <strong>By {post.author}</strong> • {new Date(post.createdAt).toLocaleDateString()}
+          <span style={{ marginLeft: '1rem' }}>👍 {post.likes}</span>
         </div>
-        <button onClick={handleDelete} className="btn-danger">Delete Post</button>
+        {user && (
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button onClick={() => navigate(`/edit/${post._id}`)} className="btn-primary" style={{ backgroundColor: '#10b981' }}>Edit</button>
+            <button onClick={handleDelete} className="btn-danger">Delete</button>
+          </div>
+        )}
       </div>
       <div className="view-post-content">
         {post.content}

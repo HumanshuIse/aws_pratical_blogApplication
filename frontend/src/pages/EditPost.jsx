@@ -1,39 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const CreatePost = () => {
+const EditPost = () => {
+  const { id } = useParams();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/posts/${id}`);
+        setTitle(res.data.title);
+        setContent(res.data.content);
+      } catch (error) {
+        console.error('Error fetching post:', error);
+      }
+    };
+    fetchPost();
+  }, [id]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = JSON.parse(localStorage.getItem('user'));
-
-    if (!user) {
-      alert('Please login to create a post');
-      navigate('/login');
-      return;
-    }
     
     try {
-      await axios.post('http://localhost:5000/api/posts', {
-        title,
-        content
-      }, {
-        headers: { Authorization: `Bearer ${user.token}` }
-      });
+      await axios.put(`http://localhost:5000/api/posts/${id}`, 
+        { title, content },
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
       navigate('/');
     } catch (error) {
-      console.error('Error creating post:', error);
-      alert('Failed to create post. Please try again.');
+      console.error('Error updating post:', error);
+      alert('Failed to update post. Are you logged in?');
     }
   };
 
   return (
     <div className="form-container">
-      <h1 className="page-title">Create a New Post</h1>
+      <h1 className="page-title">Edit Post</h1>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="title">Title</label>
@@ -44,7 +50,6 @@ const CreatePost = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            placeholder="Enter post title"
           />
         </div>
 
@@ -56,16 +61,15 @@ const CreatePost = () => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             required
-            placeholder="Write your blog post content here..."
           ></textarea>
         </div>
 
         <button type="submit" className="btn-primary" style={{ width: '100%' }}>
-          Publish Post
+          Update Post
         </button>
       </form>
     </div>
   );
 };
 
-export default CreatePost;
+export default EditPost;

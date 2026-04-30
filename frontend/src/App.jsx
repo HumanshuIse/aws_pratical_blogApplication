@@ -7,6 +7,7 @@ import ViewPost from './pages/ViewPost';
 import EditPost from './pages/EditPost';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import LandingPage from './pages/LandingPage';
 import './App.css';
 
 function App() {
@@ -16,7 +17,8 @@ function App() {
         <Navbar />
         <main className="container">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/posts" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/create" element={<CreatePost />} />

@@ -90,7 +90,7 @@ const Home = () => {
       {filteredAndSortedPosts.length === 0 ? (
         <p>No posts found.</p>
       ) : (
-        <div className="post-grid">
+        <div className="post-list">
           {filteredAndSortedPosts.map(post => (
             <PostCard key={post._id} post={post} onDelete={handleDelete} onLike={handleLike} />
           ))}

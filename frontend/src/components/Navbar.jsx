@@ -22,23 +22,23 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="nav-brand">BlogApp</Link>
+      <Link to="/" className="nav-brand">Blogify</Link>
       <div className="nav-links">
-        <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
-          Home
+        <Link to="/posts" className={location.pathname === '/posts' ? 'active' : ''}>
+          Explore
         </Link>
         {user ? (
           <>
-            <span style={{ marginLeft: '1.5rem', color: 'var(--text-muted)' }}>Hello, {user.username}</span>
-            <Link to="/create" className={`btn-primary ${location.pathname === '/create' ? 'active' : ''}`}>
+            <span style={{ color: 'var(--text-main)', fontWeight: '600' }}>{user.username}</span>
+            <Link to="/create" className="btn-primary">
               Create Post
             </Link>
-            <button onClick={handleLogout} className="btn-danger" style={{ marginLeft: '1.5rem' }}>Logout</button>
+            <button onClick={handleLogout} className="btn-danger">Logout</button>
           </>
         ) : (
           <>
-            <Link to="/login" className={location.pathname === '/login' ? 'active' : ''}>Login</Link>
-            <Link to="/register" className={`btn-primary ${location.pathname === '/register' ? 'active' : ''}`}>Register</Link>
+            <Link to="/login">Login</Link>
+            <Link to="/register" className="btn-primary">Register</Link>
           </>
         )}
       </div>

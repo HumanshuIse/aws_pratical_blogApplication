@@ -12,7 +12,7 @@ const PostCard = ({ post, onDelete, onLike }) => {
   };
 
   return (
-    <div className="post-card">
+    <div className="post-item">
       <h3 className="post-title">{post.title}</h3>
       <div className="post-meta">
         <span>By {post.author}</span> • <span>{new Date(post.createdAt).toLocaleDateString()}</span>
@@ -20,17 +20,17 @@ const PostCard = ({ post, onDelete, onLike }) => {
       <p className="post-excerpt">{post.content}</p>
       
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-        <button onClick={() => onLike(post._id)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>
+        <button onClick={() => onLike(post._id)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', padding: 0 }}>
           👍 {post.likes}
         </button>
       </div>
 
       <div className="post-actions">
-        <Link to={`/post/${post._id}`} className="btn-primary">Read More</Link>
+        <Link to={`/post/${post._id}`} className="read-more-link">Read More &rarr;</Link>
         {user && (
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Link to={`/edit/${post._id}`} className="btn-primary" style={{ backgroundColor: '#10b981' }}>Edit</Link>
-            <button onClick={handleDelete} className="btn-danger">Delete</button>
+            <Link to={`/edit/${post._id}`} className="btn-primary" style={{ backgroundColor: '#10b981', padding: '0.4rem 0.8rem', fontSize: '0.875rem' }}>Edit</Link>
+            <button onClick={handleDelete} className="btn-danger" style={{ padding: '0.4rem 0.8rem', fontSize: '0.875rem' }}>Delete</button>
           </div>
         )}
       </div>

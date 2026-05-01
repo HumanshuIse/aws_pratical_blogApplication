@@ -27,8 +27,8 @@ blog-app/
 ### 4. Local Setup Steps:
 * **Clone repo:**
   ```bash
-  git clone <repository_url>
-  cd <repository_folder_name>
+  git clone https://github.com/HumanshuIse/aws_practical_blogApplication.git
+  cd aws_practical_blogApplication
   ```
 * **Run Backend:**
   ```bash
@@ -77,8 +77,8 @@ blog-app/
 **3. Clone repo**
 * Clone your application code onto the server:
   ```bash
-  git clone <your-repository-url>
-  cd <repository-folder>
+  git clone https://github.com/HumanshuIse/aws_practical_blogApplication.git
+  cd aws_practical_blogApplication
   ```
 
 **4. Setup .env**

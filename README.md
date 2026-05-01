@@ -1,151 +1,127 @@
-# Full-stack Blog Application
+# Connect to EC2 Instance (SSH)
+```bash
+ssh -i /path/to/your-key.pem ubuntu@your-ec2-public-ip
+```
+Replace:
+* `/path/to/your-key.pem` → path to your `.pem` key file
+* `ubuntu` → use `ec2-user` for Amazon Linux
+* `your-ec2-public-ip` → your instance's public IP
 
-### 1. Project Overview
-A simple, modular, and easy-to-understand full-stack blog application. Users can view all blog posts, create new posts, read detailed single posts, and delete them. The application uses a decoupled architecture with a React frontend and a Node.js backend. Data is stored in a MongoDB Atlas cloud database.
+# Blog Project
+Simple full-stack blog application:
+* **backend:** Node.js + Express + MongoDB API
+* **frontend:** React + Vite app
 
-### 2. Tech Stack
-* **Frontend:** React (Vite)
-* **Backend:** Node.js + Express
-* **Database:** MongoDB Atlas (Cloud)
+### Prerequisites
+* Node.js 20.x (LTS, recommended)
+* npm 10.x
+* MongoDB connection string
 
-### 3. Folder Structure
-```text
-blog-app/
-│
-├── frontend/   → React app
-│
-├── backend/    → Node backend
-│   ├── models/
-│   ├── routes/
-│   ├── controllers/
-│   ├── config/
-│   └── server.js
-│
-└── README.md
+Check versions:
+```bash
+node -v
+npm -v
 ```
 
-### 4. Local Setup Steps:
-* **Clone repo:**
-  ```bash
-  git clone https://github.com/HumanshuIse/aws_practical_blogApplication.git
-  cd aws_practical_blogApplication
-  ```
-* **Run Backend:**
-  ```bash
-  cd backend
-  npm install
-  npm run dev
-  ```
-  *(Make sure to create a `.env` file in the `backend` folder with `MONGO_URI` and `PORT=5000`)*
-* **Run Frontend:**
-  ```bash
-  cd frontend
-  npm install
-  npm run dev
-  ```
-
-### 5. API Endpoints
-* `GET /api/posts` → get all posts
-* `GET /api/posts/:id` → get single post
-* `POST /api/posts` → create post
-* `DELETE /api/posts/:id` → delete post
-
-### 6. Sample JSON:
-```json
-{
-"title": "My Blog",
-"content": "This is content",
-"author": "Humanshu"
-}
+### Install Node.js + npm (Ubuntu/Debian)
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+sudo apt install npm
 ```
 
-### 7. AWS EC2 DEPLOYMENT (ONLY STEPS, NO CODE CHANGES)
+### 1) Backend Configuration
+```bash
+cd backend
+cp .env.example .env
+```
 
-**1. Launch EC2 (Ubuntu)**
-* Log in to the AWS Management Console and go to EC2.
-* Launch a new instance using an **Ubuntu** AMI.
-* Ensure you configure the Security Group to allow inbound traffic on ports `22` (SSH), `80` (HTTP), `5000` (Backend API), and `5173` or `4173` (Frontend).
-* SSH into your instance using your `.pem` key file.
+### 2) Update Environment Variables (.env)
+Using Nano
+```bash
+cd backend
+nano .env
+```
+Update values:
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+PORT=5000
+```
+Save & Exit Nano:
+* `CTRL + O` → save
+* `Enter` → confirm
+* `CTRL + X` → exit
 
-**2. Install Node.js**
-* Once logged into the EC2 terminal, install Node.js:
-  ```bash
-  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-  sudo apt-get install -y nodejs
-  ```
+Verify .env:
+```bash
+cat .env
+```
 
-**3. Clone repo**
-* Clone your application code onto the server:
-  ```bash
-  git clone https://github.com/HumanshuIse/aws_practical_blogApplication.git
-  cd aws_practical_blogApplication
-  ```
+### 3) Install Dependencies
 
-**4. Setup .env**
-* Go into the backend directory and set up environment variables:
-  ```bash
-  cd backend
-  nano .env
-  ```
-* Add `MONGO_URI` and `PORT=5000`. Save and exit.
+**Backend**
+```bash
+cd backend
+npm install
+```
 
-**5. Run backend**
-* Install dependencies and run the Node.js server (use `pm2` for production or `nohup` so it runs in the background):
-  ```bash
-  npm install
-  npm install -g pm2
-  pm2 start server.js --name "backend"
-  ```
+**Frontend**
+```bash
+cd ../frontend
+npm install
+```
 
-**6. Build frontend (npm run build)**
-* Go to the frontend directory, install dependencies, and build the static files:
-  ```bash
-  cd ../frontend
-  npm install
-  npm run build
-  ```
+### 4) Run the Project
+Open 2 terminals:
 
-**7. Serve frontend**
-* You can serve the built frontend using a static server like `serve`:
-  ```bash
-  npm install -g serve
-  serve -s dist -l 5173
-  ```
-* (Alternatively, run it in the background using pm2: `pm2 start "serve -s dist -l 5173" --name "frontend"`)
+**Terminal 1 (Backend)**
+```bash
+cd backend
+npm start
+```
 
----
+**Terminal 2 (Frontend)**
+```bash
+cd frontend
+npm run dev -- --host
+```
 
-## 🧪 TESTING
+### 5) Access Frontend
+Use your EC2 public IP:
+```
+http://your-ec2-public-ip:5173
+```
 
-### Testing using Postman
+### Important: Security Group Configuration
+Make sure to allow frontend port:
+1. Go to EC2 → Security Groups
+2. Add Inbound Rule:
+   * **Type:** Custom TCP
+   * **Port:** 5173
+   * **Source:** `0.0.0.0/0` (or restrict to your IP)
+*(Note: Also ensure port 5000 is open if the frontend calls the backend via the EC2 public IP.)*
 
-You can test the backend API endpoints locally or on your deployed EC2 instance using Postman.
+### Optional: Seed Demo Data
+> **Note:** The `seed:demo` script is currently missing from your project. I have included it here in the documentation for when you implement it!
 
-1. **Get All Posts:**
-   - Method: `GET`
-   - URL: `http://localhost:5000/api/posts`
-   - Click **Send**.
+```bash
+cd backend
+npm run seed:demo
+```
+Remove demo data:
+```bash
+npm run seed:demo:destroy
+```
 
-2. **Create a Post:**
-   - Method: `POST`
-   - URL: `http://localhost:5000/api/posts`
-   - Go to the **Body** tab, select **raw**, and choose **JSON** format.
-   - Enter the sample JSON:
-     ```json
-     {
-     "title": "My Blog",
-     "content": "This is content",
-     "author": "Humanshu"
-     }
-     ```
-   - Click **Send**.
+### Restart Backend After .env Changes
+```bash
+cd backend
+npm start
+```
 
-3. **Get Single Post:**
-   - Method: `GET`
-   - URL: `http://localhost:5000/api/posts/<post-id>` (Replace `<post-id>` with an actual ID from step 1).
-   - Click **Send**.
-
-4. **Delete a Post:**
-   - Method: `DELETE`
-   - URL: `http://localhost:5000/api/posts/<post-id>`
-   - Click **Send**.
+### Notes
+* Ensure backend runs on port 5000
+* Never commit `.env` to GitHub
+* Keep secrets secure
+* No spaces around `=` in `.env`
